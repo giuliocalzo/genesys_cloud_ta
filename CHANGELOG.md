@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## [Unreleased]
+
+### Added
+
+- CIM 5.x compatibility: audit events map to the Change data model and edge metrics map to the Performance data model.
+- `disks_total_bytes` and `disks_available_bytes` fields on `genesyscloud:telephonyprovidersedge:edges:metrics` events.
+- CIM compliance tests with pytest-splunk-addon, and unit tests.
+
+
 ## [v0.4.3] - 2026-09-30
 
 ### Added

@@ -50,6 +50,7 @@ nav:
   - Overview:
     - Introduction: 'index.md'
     - Source types: 'Sourcetypes/index.md'
+    - CIM compatibility: 'CIM/index.md'
     # - Release notes: 'Releasenotes/index.md'
     # - Release history: 'Releasehistory/index.md'
     # - Hardware and software requirements: 'Hardwareandsoftwarerequirements/index.md'
