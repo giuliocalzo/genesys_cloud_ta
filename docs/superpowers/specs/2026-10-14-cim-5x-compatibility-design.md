@@ -47,7 +47,6 @@ Value normalization uses `case()` inside `EVAL-` statements. No lookup files.
 | `package/default/tags.conf` | New: tags per event type (below) |
 | `package/bin/genesyscloud_models.py` | `EdgeModel` gains a static method that sums a metric's `disks` into total and available bytes |
 | `package/bin/edges_metrics_helper.py` | Calls that method and adds `disks_total_bytes` and `disks_available_bytes` to each event |
-| `package/app.manifest` | `commonInformationModels` declares Change and Performance |
 | `.splunkbase` | `SPLUNKBASE_SPLUNK_CIM_VERSION=5.0,5.1,5.2,5.3` |
 | `docs/CIM/index.md` | New page: mapped fields per data model, validation searches |
 | `docs/Sourcetypes/index.md` | New "CIM data model" column |
@@ -58,6 +57,10 @@ Value normalization uses `case()` inside `EVAL-` statements. No lookup files.
 (its help text uses `'4.9,6.1'` as the example), so `.splunkbase` lists each
 5.x minor rather than `5.x`. Confirm during implementation that Splunkbase
 accepts each listed minor.
+
+`app.manifest` is left unchanged: the packaging toolkit (SLIM 1.2.8) validates
+`commonInformationModels` against a built-in list that stops at CIM 4.5 and has
+no `Change` model, so declaring CIM 5.x there would fail validation.
 
 ### Event types and tags
 

@@ -113,7 +113,7 @@ Expected: 4 passed
 **Files:**
 - Modify: `package/default/props.conf`
 - Create: `package/default/eventtypes.conf`, `package/default/tags.conf`
-- Create: `tests/knowledge/pytest.ini`, `tests/knowledge/conftest.py`,
+- Create: `tests/knowledge/pytest.ini`,
   `tests/knowledge/requirements.txt`, `tests/knowledge/test_addon.py`,
   `tests/knowledge/pytest-splunk-addon-data.conf`,
   `tests/knowledge/samples/genesyscloud_audits.xml`,
@@ -167,13 +167,13 @@ and `splunk_requirements` tests pass.
 
 ### Task 3: Declare CIM compatibility
 
-**Files:** `package/app.manifest`, `.splunkbase`
+**Files:** `.splunkbase`
 
-- [ ] **Step 1:** Set `"commonInformationModels": {"Change": ">=5.0.0", "Performance": ">=5.0.0"}`
-  in `app.manifest`, and `SPLUNKBASE_SPLUNK_CIM_VERSION=5.0,5.1,5.2,5.3`.
-- [ ] **Step 2: Verify** `ucc-gen build` succeeds and
-  `jq .info.commonInformationModels output/genesys_cloud_ta/app.manifest`
-  prints both models.
+- [ ] **Step 1:** Set `SPLUNKBASE_SPLUNK_CIM_VERSION=5.0,5.1,5.2,5.3`. Leave
+  `app.manifest` alone: SLIM 1.2.8 only knows CIM models up to 4.5 and has no
+  `Change`, so a `commonInformationModels` entry would fail validation.
+- [ ] **Step 2: Verify** `source .splunkbase && echo "$SPLUNKBASE_SPLUNK_CIM_VERSION"`
+  prints `5.0,5.1,5.2,5.3`.
 - [ ] **Step 3: Commit** — `chore:declared CIM 5.x compatibility`
 
 ### Task 4: Documentation
