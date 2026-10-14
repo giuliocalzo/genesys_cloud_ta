@@ -13,3 +13,7 @@ local.meta
 dist/
 .pytest_cache
 *.ipynb
+tests/knowledge/events.pickle
+tests/knowledge/generator.lock
+tests/knowledge/uf_files/
+tests/knowledge/junit/

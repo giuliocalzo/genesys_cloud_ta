@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<device>
+    <vendor>Genesys</vendor>
+    <product>Genesys Cloud</product>
+    <version id="v2"/>
+    <event code="" name="EdgeMetrics" format="json">
+        <transport type="modinput" host="genesys_cloud_ta" source="edges_metrics://edges"/>
+        <source>
+            <comment>Edge metrics with the disk sums added by the input.</comment>
+        </source>
+        <raw><![CDATA[{"edge": {"site": {"id": "f1128b9e-13fc-4c4d-9001-06a197f68a31", "name": "EMEA_Region", "state": "active"}, "id": "581724f4-5ae5-4bff-98cd-6398cc7187e0", "name": "cloud-media-i-09206d9c8a9373a79", "version": 8, "description": "ASG-VERSION:023", "date_created": "2025-02-19 03:41:04.264000+00:00", "date_modified": "2025-02-19 03:45:12.444000+00:00", "state": "active", "online_status": "ONLINE", "serial_number": null, "physical_edge": false, "edge_deployment_type": "CLOUD", "conversation_count": 0, "os_name": "Linux"}, "event_time": "14-10-2026T09:00:00.000000+0000", "up_time_msec": 2627768000, "processors": [{"active_time_pct": 21.5, "cpu_id": "cpu0", "idle_time_pct": 78.5, "privileged_time_pct": 7.0, "user_time_pct": 2.5}, {"active_time_pct": 23.5, "cpu_id": "cpu1", "idle_time_pct": 76.5, "privileged_time_pct": 8.0, "user_time_pct": 1.5}, {"active_time_pct": 22.5, "cpu_id": "total", "idle_time_pct": 77.5, "privileged_time_pct": 7.5, "user_time_pct": 2.25}], "memory": [{"available_bytes": 0.0, "type": "virtual", "total_bytes": 0.0}, {"available_bytes": 2797363200.0, "type": "physical", "total_bytes": 4059807744.0}], "disks": [{"available_bytes": 4590825472.0, "partition_name": "/dev/nvme0n1p1", "total_bytes": 12872298496.0}, {"available_bytes": 7836819456.0, "partition_name": "/dev/nvme1n1", "total_bytes": 8283189248.0}], "subsystems": null, "networks": null, "disks_total_bytes": 21155487744.0, "disks_available_bytes": 12427644928.0}]]></raw>
+        <cim>
+            <models>
+                <model>Performance_CPU</model>
+                <model>Performance_Memory</model>
+                <model>Performance_Storage</model>
+                <model>Performance_OS_Uptime</model>
+            </models>
+            <cim_fields>
+                <field name="dest" value="cloud-media-i-09206d9c8a9373a79"/>
+                <field name="resource_type" value="system"/>
+                <field name="vendor_product" value="Genesys Cloud"/>
+                <field name="cpu_load_percent" value="22.5"/>
+                <field name="cpu_user_percent" value="2.25"/>
+                <field name="mem" value="3871.73"/>
+                <field name="mem_free" value="2667.77"/>
+                <field name="mem_used" value="1203.96"/>
+                <field name="storage" value="20175.45"/>
+                <field name="storage_free" value="11851.93"/>
+                <field name="storage_used" value="8323.52"/>
+                <field name="storage_free_percent" value="58.74"/>
+                <field name="storage_used_percent" value="41.26"/>
+                <field name="uptime" value="2627768"/>
+                <field name="signature" value="edge_metrics"/>
+            </cim_fields>
+        </cim>
+    </event>
+    <event code="" name="EdgeMetricsWithoutDiskSums" format="json">
+        <transport type="modinput" host="genesys_cloud_ta" source="edges_metrics://edges"/>
+        <source>
+            <comment>Edge metrics indexed before the disk sums existed: no Storage mapping.</comment>
+        </source>
+        <raw><![CDATA[{"edge": {"site": {"id": "f1128b9e-13fc-4c4d-9001-06a197f68a31", "name": "EMEA_Region", "state": "active"}, "id": "692835a5-6bf6-4c00-a9de-7409dd8298f1", "name": "cloud-media-i-0a1b2c3d4e5f60718", "version": 3, "description": "ASG-VERSION:023", "date_created": "2025-02-19 03:41:04.264000+00:00", "date_modified": "2025-02-19 03:45:12.444000+00:00", "state": "active", "online_status": "ONLINE", "serial_number": null, "physical_edge": false, "edge_deployment_type": "CLOUD", "conversation_count": 2, "os_name": "Linux"}, "event_time": "14-10-2026T09:00:00.000000+0000", "up_time_msec": 86400000, "processors": [{"active_time_pct": 40.5, "cpu_id": "total", "idle_time_pct": 59.5, "privileged_time_pct": 10.5, "user_time_pct": 30.0}], "memory": [{"available_bytes": 1073741824.0, "type": "physical", "total_bytes": 4294967296.0}], "disks": [{"available_bytes": 4590825472.0, "partition_name": "/dev/nvme0n1p1", "total_bytes": 12872298496.0}], "subsystems": null, "networks": null}]]></raw>
+        <cim>
+            <models>
+                <model>Performance_CPU</model>
+                <model>Performance_Memory</model>
+                <model>Performance_OS_Uptime</model>
+            </models>
+            <cim_fields>
+                <field name="dest" value="cloud-media-i-0a1b2c3d4e5f60718"/>
+                <field name="cpu_load_percent" value="40.5"/>
+                <field name="mem" value="4096.00"/>
+                <field name="mem_free" value="1024.00"/>
+                <field name="mem_used" value="3072.00"/>
+                <field name="uptime" value="86400"/>
+            </cim_fields>
+        </cim>
+    </event>
+</device>

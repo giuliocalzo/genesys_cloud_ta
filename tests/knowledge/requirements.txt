@@ -1,0 +1,2 @@
+# 7.x and later import splunk_cim_models, which is not published on PyPI.
+pytest-splunk-addon==6.4.0

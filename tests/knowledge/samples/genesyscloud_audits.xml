@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<device>
+    <vendor>Genesys</vendor>
+    <product>Genesys Cloud</product>
+    <version id="v2"/>
+    <event code="" name="AuditUpdateQueueSdk" format="json">
+        <transport type="modinput" host="genesys_cloud_ta" source="audit_query://audits"/>
+        <source>
+            <comment>Audit event as returned by the SDK (to_dict, snake_case keys).</comment>
+        </source>
+        <raw><![CDATA[{"id": "5b3c8a0e-6b0b-4c55-9a52-1c1f5f0a1e01", "user_home_org_id": "9a7c4b2e-0d3f-4d1e-8f6a-2b5c7d9e1f02", "user": {"id": "1d2e3f40-5a6b-4c7d-8e9f-0a1b2c3d4e03", "name": "Jane Doe", "self_uri": "/api/v2/users/1d2e3f40-5a6b-4c7d-8e9f-0a1b2c3d4e03"}, "client": {"id": "c11e7a2b-3c4d-4e5f-8a9b-0c1d2e3f4a04", "self_uri": null}, "remote_ip": ["203.0.113.10"], "service_name": "Routing", "level": "USER", "event_date": "2026-10-14 09:00:00+00:00", "message": {"localizable_message_code": "UPDATE_QUEUE", "message": "Queue updated", "message_with_params": null, "message_params": null}, "action": "Update", "entity": {"id": "e0a1b2c3-d4e5-4f60-8172-839405a6b705", "name": "Support_Queue", "self_uri": "/api/v2/routing/queues/e0a1b2c3-d4e5-4f60-8172-839405a6b705"}, "entity_type": "Queue", "status": "SUCCESS", "application": "PureCloud", "initiating_action": {"transaction_id": "7f8e9d0c-1b2a-4394-8576-a4b3c2d1e006", "action_context": null}, "transaction_initiator": true, "property_changes": [{"property": "name", "old_values": ["Support"], "new_values": ["Support_Queue"]}], "context": null, "entity_changes": null}]]></raw>
+        <cim>
+            <models>
+                <model>Change</model>
+            </models>
+            <cim_fields>
+                <field name="action" value="updated"/>
+                <field name="command" value="Update"/>
+                <field name="status" value="success"/>
+                <field name="change_type" value="Routing"/>
+                <field name="object" value="Support_Queue"/>
+                <field name="object_id" value="e0a1b2c3-d4e5-4f60-8172-839405a6b705"/>
+                <field name="object_category" value="queue"/>
+                <field name="object_attrs" value="name"/>
+                <field name="user" value="Jane Doe"/>
+                <field name="user_id" value="1d2e3f40-5a6b-4c7d-8e9f-0a1b2c3d4e03"/>
+                <field name="user_type" value="USER"/>
+                <field name="src" value="203.0.113.10"/>
+                <field name="dest" value="9a7c4b2e-0d3f-4d1e-8f6a-2b5c7d9e1f02"/>
+                <field name="vendor_account" value="9a7c4b2e-0d3f-4d1e-8f6a-2b5c7d9e1f02"/>
+                <field name="dvc" value="Genesys Cloud"/>
+                <field name="vendor_product" value="Genesys Cloud"/>
+            </cim_fields>
+        </cim>
+    </event>
+    <event code="" name="AuditDeleteQueueDownloadFailure" format="json">
+        <transport type="modinput" host="genesys_cloud_ta" source="audit_query://audits"/>
+        <source>
+            <comment>Failed audit event from the results download URL (raw camelCase keys).</comment>
+        </source>
+        <raw><![CDATA[{"id": "6c4d9b1f-7c1c-4d66-8b63-2d2f6f1b2f11", "userHomeOrgId": "9a7c4b2e-0d3f-4d1e-8f6a-2b5c7d9e1f02", "user": {"id": "2e3f4051-6b7c-4d8e-9fa0-1b2c3d4e5f12", "name": "John Smith"}, "client": {"id": "c11e7a2b-3c4d-4e5f-8a9b-0c1d2e3f4a04"}, "remoteIp": ["198.51.100.7"], "serviceName": "Routing", "level": "USER", "eventTime": "2026-10-14T09:05:00Z", "message": {"localizableMessageCode": "DELETE_QUEUE", "message": "Queue deletion failed"}, "action": "Delete", "entity": {"id": "f1b2c3d4-e5f6-4071-8283-94a5b6c7d813", "name": "Legacy_Queue"}, "entityType": "Queue", "status": "FAILURE", "application": "PureCloud", "transactionInitiator": true, "propertyChanges": [{"property": "state", "oldValues": ["active"], "newValues": ["deleted"]}]}]]></raw>
+        <cim>
+            <models>
+                <model>Change</model>
+            </models>
+            <cim_fields>
+                <field name="action" value="deleted"/>
+                <field name="command" value="Delete"/>
+                <field name="status" value="failure"/>
+                <field name="result" value="Queue deletion failed"/>
+                <field name="change_type" value="Routing"/>
+                <field name="object" value="Legacy_Queue"/>
+                <field name="object_id" value="f1b2c3d4-e5f6-4071-8283-94a5b6c7d813"/>
+                <field name="object_category" value="queue"/>
+                <field name="object_attrs" value="state"/>
+                <field name="user" value="John Smith"/>
+                <field name="src" value="198.51.100.7"/>
+                <field name="dest" value="9a7c4b2e-0d3f-4d1e-8f6a-2b5c7d9e1f02"/>
+                <field name="dvc" value="Genesys Cloud"/>
+                <field name="vendor_product" value="Genesys Cloud"/>
+            </cim_fields>
+        </cim>
+    </event>
+    <event code="" name="AuditCreateUserSdk" format="json">
+        <transport type="modinput" host="genesys_cloud_ta" source="audit_query://audits"/>
+        <source>
+            <comment>User account created, SDK shape: maps to Change.Account_Management.</comment>
+        </source>
+        <raw><![CDATA[{"id": "7d5eac20-8d2d-4e77-9c74-3e3f7f2c3f21", "user_home_org_id": "9a7c4b2e-0d3f-4d1e-8f6a-2b5c7d9e1f02", "user": {"id": "1d2e3f40-5a6b-4c7d-8e9f-0a1b2c3d4e03", "name": "Jane Doe", "self_uri": "/api/v2/users/1d2e3f40-5a6b-4c7d-8e9f-0a1b2c3d4e03"}, "client": {"id": "c11e7a2b-3c4d-4e5f-8a9b-0c1d2e3f4a04", "self_uri": null}, "remote_ip": ["203.0.113.10"], "service_name": "Directory", "level": "USER", "event_date": "2026-10-14 09:10:00+00:00", "message": {"localizable_message_code": "CREATE_USER", "message": "User created", "message_with_params": null, "message_params": null}, "action": "Create", "entity": {"id": "a2c3d4e5-f6a7-4b81-9293-a4b5c6d7e822", "name": "New Agent", "self_uri": "/api/v2/users/a2c3d4e5-f6a7-4b81-9293-a4b5c6d7e822"}, "entity_type": "User", "status": "SUCCESS", "application": "PureCloud", "initiating_action": {"transaction_id": "8a9b0c1d-2e3f-4a5b-8c7d-b5c4d3e2f123", "action_context": null}, "transaction_initiator": true, "property_changes": [{"property": "email", "old_values": [], "new_values": ["new.agent@example.com"]}], "context": null, "entity_changes": null}]]></raw>
+        <cim>
+            <models>
+                <model>Change_Account_Management</model>
+            </models>
+            <cim_fields>
+                <field name="action" value="created"/>
+                <field name="command" value="Create"/>
+                <field name="status" value="success"/>
+                <field name="change_type" value="Directory"/>
+                <field name="object" value="New Agent"/>
+                <field name="object_category" value="user"/>
+                <field name="user" value="New Agent"/>
+                <field name="src_user" value="Jane Doe"/>
+                <field name="src_user_name" value="Jane Doe"/>
+                <field name="src" value="203.0.113.10"/>
+                <field name="dvc" value="Genesys Cloud"/>
+                <field name="vendor_product" value="Genesys Cloud"/>
+            </cim_fields>
+        </cim>
+    </event>
+    <event code="" name="AuditUpdateUserDownloadWarning" format="json">
+        <transport type="modinput" host="genesys_cloud_ta" source="audit_query://audits"/>
+        <source>
+            <comment>User account updated with a warning, download shape (camelCase keys).</comment>
+        </source>
+        <raw><![CDATA[{"id": "8e6fbd31-9e3e-4f88-8d85-4f4f8f3d4f31", "userHomeOrgId": "9a7c4b2e-0d3f-4d1e-8f6a-2b5c7d9e1f02", "user": {"id": "2e3f4051-6b7c-4d8e-9fa0-1b2c3d4e5f12", "name": "John Smith"}, "client": {"id": "c11e7a2b-3c4d-4e5f-8a9b-0c1d2e3f4a04"}, "remoteIp": ["198.51.100.7"], "serviceName": "Directory", "level": "USER", "eventTime": "2026-10-14T09:15:00Z", "message": {"localizableMessageCode": "UPDATE_USER", "message": "User updated"}, "action": "Update", "entity": {"id": "a2c3d4e5-f6a7-4b81-9293-a4b5c6d7e822", "name": "New Agent"}, "entityType": "User", "status": "WARNING", "application": "PureCloud", "transactionInitiator": true, "propertyChanges": [{"property": "title", "oldValues": ["Agent"], "newValues": ["Senior Agent"]}]}]]></raw>
+        <cim>
+            <models>
+                <model>Change_Account_Management</model>
+            </models>
+            <cim_fields>
+                <field name="action" value="updated"/>
+                <field name="command" value="Update"/>
+                <field name="status" value="success"/>
+                <field name="result" value="warning"/>
+                <field name="change_type" value="Directory"/>
+                <field name="object" value="New Agent"/>
+                <field name="object_category" value="user"/>
+                <field name="object_attrs" value="title"/>
+                <field name="user" value="New Agent"/>
+                <field name="src_user" value="John Smith"/>
+                <field name="src" value="198.51.100.7"/>
+                <field name="dest" value="9a7c4b2e-0d3f-4d1e-8f6a-2b5c7d9e1f02"/>
+                <field name="dvc" value="Genesys Cloud"/>
+                <field name="vendor_product" value="Genesys Cloud"/>
+            </cim_fields>
+        </cim>
+    </event>
+</device>

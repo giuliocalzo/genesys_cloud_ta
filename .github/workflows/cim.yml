@@ -1,0 +1,99 @@
+name: cim
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, reopened, synchronize]
+    paths:
+      - package/**
+      - globalConfig.json
+      - tests/knowledge/**
+      - .github/workflows/cim.yml
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  pytest-splunk-addon:
+    name: CIM compliance (pytest-splunk-addon)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      # Throwaway credentials for the ephemeral Splunk container of this job.
+      SPLUNK_PASSWORD: Chang3d!
+      SPLUNK_HEC_TOKEN: 4a8a737d-5452-426c-a6f7-106dca4e813f
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Build TA
+        id: build
+        run: |
+          python -m venv /tmp/ucc
+          /tmp/ucc/bin/pip install --upgrade pip splunk-add-on-ucc-framework
+          app_version=$(jq -r '.info.id.version' package/app.manifest)
+          app_id=$(jq -r '.info.id.name' package/app.manifest)
+          echo "app_id=${app_id}" >> "$GITHUB_OUTPUT"
+          /tmp/ucc/bin/ucc-gen build --ta-version "${app_version}"
+          chmod -R +r output
+          chmod -R go-w output
+
+      - name: Start Splunk container
+        run: |
+          docker run -d --name splunk \
+            -e SPLUNK_START_ARGS="--accept-license --answer-yes --no-prompt" \
+            -e SPLUNK_GENERAL_TERMS="--accept-sgt-current-at-splunk-com" \
+            -e SPLUNK_PASSWORD="$SPLUNK_PASSWORD" \
+            -e SPLUNK_HEC_TOKEN="$SPLUNK_HEC_TOKEN" \
+            -v "${{ github.workspace }}/output/${{ steps.build.outputs.app_id }}:/opt/splunk/etc/apps/${{ steps.build.outputs.app_id }}" \
+            -p 8088:8088 \
+            -p 8089:8089 \
+            splunk/splunk:10.2.0
+          for i in {1..90}; do
+            docker logs splunk 2>&1 | grep -q "Ansible playbook complete" && exit 0
+            sleep 5
+          done
+          echo "Splunk failed to start"
+          docker logs splunk 2>&1 | tail -n 50
+          exit 1
+
+      # test_splunk_internal_errors is deselected: it asserts that the whole
+      # Splunk instance logged no ERROR in _internal, which is not a CIM check.
+      - name: Run pytest-splunk-addon
+        run: |
+          python -m venv /tmp/psa
+          /tmp/psa/bin/pip install -r requirements.txt
+          mkdir -p junit
+          /tmp/psa/bin/python -m pytest \
+            --splunk-type=external \
+            --splunk-app="../../output/${{ steps.build.outputs.app_id }}" \
+            --splunk-data-generator=. \
+            --splunk-host=localhost \
+            --splunk-port=8089 \
+            --splunk-user=admin \
+            --splunk-password="$SPLUNK_PASSWORD" \
+            --splunk-hec-port=8088 \
+            --splunk-hec-token="$SPLUNK_HEC_TOKEN" \
+            --search-retry=4 \
+            --search-interval=5 \
+            --discard-eventlogs \
+            -m "splunk_searchtime_fields or splunk_searchtime_cim or splunk_requirements" \
+            -k "not test_splunk_internal_errors" \
+            --junitxml=junit/cim-results.xml
+        working-directory: ./tests/knowledge
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: cim-results
+          path: |
+            tests/knowledge/junit/
+            tests/knowledge/*.log
