@@ -65,7 +65,15 @@ accepts each listed minor.
 |---|---|---|
 | `genesyscloud_audit_change` | `sourcetype="genesyscloud:operational:audits"` | `change` |
 | `genesyscloud_audit_account` | audits where the entity type is `User` (both key shapes) | `change`, `account` |
-| `genesyscloud_edge_performance` | `sourcetype="genesyscloud:telephonyprovidersedge:edges:metrics"` | `performance`, `cpu`, `memory`, `storage`, `uptime` |
+| `genesyscloud_edge_performance` | `sourcetype="genesyscloud:telephonyprovidersedge:edges:metrics"` | `performance`, `cpu`, `memory`, `os`, `uptime` |
+| `genesyscloud_edge_storage` | edge metrics where `disks_total_bytes>0` | `performance`, `storage` |
+
+In the Performance model, `Uptime` is a child of the `OS` dataset, so uptime
+events also need the `os` tag and the OS-required `signature` field.
+
+`Storage` has its own event type so that edge metrics indexed before the
+upgrade, which lack the disk sums, stay out of the Storage dataset instead of
+appearing there with empty fields.
 
 ### Audits → Change
 
@@ -139,6 +147,7 @@ Edge metric events are always SDK `to_dict()` output, so keys are snake_case
 | `mem_free` | `available_bytes` of the `physical` memory entry, in MB |
 | `mem_used` | `mem - mem_free` |
 | `uptime` | `up_time_msec / 1000` |
+| `signature` | `edge_metrics` (static; required by the OS dataset) |
 | `storage` | `disks_total_bytes`, in MB |
 | `storage_free` | `disks_available_bytes`, in MB |
 | `storage_used` | `storage - storage_free` |
@@ -155,23 +164,30 @@ MB means bytes / 1048576.
 in `genesyscloud_models.py`, which imports only the Genesys SDK, so it can be
 unit-tested without the build-generated `import_declare_test`. No existing field is renamed or
 removed, so existing searches keep working. Events indexed before the upgrade
-have no Storage fields; their CPU, Memory and Uptime fields still map. When
-`disks` is empty or missing, both sums are `0` and the storage percentages are
-left unset rather than dividing by zero.
+have no disk sums, so they are not tagged `storage`; their CPU, Memory and
+Uptime fields still map. When `disks` is empty or missing, both sums are `0`,
+which also keeps the event out of the Storage dataset.
 
 ## Testing
 
 ### CIM compliance (new CI job)
 
-`.github/workflows/cim.yml` runs pytest-splunk-addon 8, which requires Python
-3.13 and pytest 9. It runs as its own job because the existing suite pins
-Python 3.9 and pytest 6.2.4.
+`.github/workflows/cim.yml` runs pytest-splunk-addon **6.4.0**, pinned. It
+runs as its own job, with its own `tests/knowledge/` directory, requirements
+and `pytest.ini`, because the existing suite pins pytest 6.2.4.
 
-- Target `splunk/splunk:10.2.0` with the CIM add-on 5.x installed from
-  Splunkbase, using the repository's `SPL_COM_USERNAME` / `SPL_COM_PASSWORD`
-  secrets. The job is skipped when those secrets are unavailable (fork PRs).
+Version 6.4.0 is the newest self-contained release. Releases 7.x and 8.x import
+`splunk_cim_models`, which is not a declared dependency, is not on public PyPI,
+and is sourced from a private Splunk repository; the PSA documentation warns
+against installing a package by that name from PyPI. The models bundled in
+6.4.0 predate that repository's `cim-6` branch, which matches a CIM 5.x target.
+
+- Target a plain `splunk/splunk:10.2.0` container with the built add-on
+  mounted. PSA validates CIM compliance from each dataset's tag constraints and
+  required fields; it never runs `| datamodel`, so the CIM add-on is not
+  installed. The job needs no Splunkbase credentials and runs on forks.
 - Sample events live in `tests/knowledge/samples/` with a
-  `pytest-splunk-addon-data.conf`:
+  `pytest-splunk-addon-data.conf`, ingested over HEC (`input_type = modinput`):
   - audits in snake_case shape,
   - audits in camelCase (downloaded) shape,
   - an audit whose entity type is `User` (Account_Management),
@@ -186,10 +202,13 @@ list, and a missing `disks` key. It runs without Splunk or the mock API.
 
 ## Success criteria
 
-- `| datamodel Change All_Changes search | search sourcetype="genesyscloud:operational:audits"`
-  returns events with `action`, `status`, `user`, `object`, `object_category`
-  and `change_type` populated, for both key shapes.
-- `| datamodel Performance CPU search`, `Memory`, `Storage` and `Uptime` return
-  edge metric events with the fields listed above.
-- The pytest-splunk-addon CI job is green.
+- The pytest-splunk-addon CI job is green: the CIM required-field tests for
+  Change (`All_Changes`, `Account_Management`) and Performance (`CPU`,
+  `Memory`, `Storage`, `OS`, `Uptime`), plus the field, event type and tag
+  tests for both sourcetypes, for both audit key shapes.
+- With the CIM add-on installed, `| datamodel Change All_Changes search` and
+  `| datamodel Performance CPU search` (and `Memory`, `Storage`, `Uptime`)
+  return the sample events. This is a manual check documented in
+  `docs/CIM/index.md`, not part of CI.
+- The disk-sum unit test passes.
 - The existing `tests` workflow stays green.
