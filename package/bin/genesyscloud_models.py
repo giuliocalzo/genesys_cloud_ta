@@ -1,7 +1,7 @@
 import re
 import datetime
 
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 from PureCloudPlatformClientV2.models import (
     Edge,
     Phone,
@@ -108,6 +108,18 @@ class EdgeModel(GCBaseModel):
             if key in ["id", "name", "state"]:
                 ret_edge["site"][key] = value
         return ret_edge
+
+    @staticmethod
+    def sum_disks(disks: Optional[List[dict]]) -> Tuple[float, float]:
+        """
+        Sum the capacity of all the disks of an edge.
+        :param disks: Disks of an edge metric, as returned by the SDK to_dict().
+        :return: Total bytes and available bytes over all the disks.
+        """
+        disks = disks or []
+        total = sum(disk.get("total_bytes") or 0 for disk in disks)
+        available = sum(disk.get("available_bytes") or 0 for disk in disks)
+        return total, available
 
 
 class PhoneModel(GCBaseModel):

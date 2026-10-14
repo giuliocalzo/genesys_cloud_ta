@@ -9,6 +9,7 @@ on:
       - package/bin/**
       - package/lib/requirements.txt
       - tests/**
+      - .github/workflows/tests.yml
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -114,6 +115,13 @@ jobs:
           docker logs splunk 2>&1 | tail -n 20 | grep -F "$EXPECTED" && echo "Found expected line near end of logs." || (echo "Expected line not found." && exit 1)
           echo "Test connectivity..."
           docker exec splunk curl -v http://mockoon:3004/ || echo "Failed to reach Mockoon from Splunk"
+
+      - name: Run unit tests
+        run: |
+          pip install -r test-requirements.txt
+          mkdir -p junit
+          python -m pytest unit/ --junitxml=junit/unit-test-results-${{ matrix.version }}.xml
+        working-directory: ./tests
 
       - name: Run integration tests
         env:
@@ -253,6 +261,13 @@ jobs:
           docker logs splunk 2>&1 | tail -n 20 | grep -F "$EXPECTED" && echo "Found expected line near end of logs." || (echo "Expected line not found." && exit 1)
           echo "Test connectivity..."
           docker exec splunk curl -v http://mockoon:3004/ || echo "Failed to reach Mockoon from Splunk"
+
+      - name: Run unit tests
+        run: |
+          pip install -r test-requirements.txt
+          mkdir -p junit
+          python -m pytest unit/ --junitxml=junit/unit-test-results-${{ matrix.version }}.xml
+        working-directory: ./tests
 
       - name: Run integration tests
         env:

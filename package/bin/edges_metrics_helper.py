@@ -124,6 +124,7 @@ def stream_events(inputs: smi.InputDefinition, event_writer: smi.EventWriter):
                 event_time_epoch = metric_obj.event_time.timestamp()
                 metric = metric_obj.to_dict()
                 metric["event_time"] = e_model.to_string(metric_obj.event_time)
+                metric["disks_total_bytes"], metric["disks_available_bytes"] = e_model.sum_disks(metric.get("disks"))
                 try:
                     metric["edge"] = e_model.get_edge(metric_obj.edge.id)
                 except ValueError as ve:
