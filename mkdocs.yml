@@ -36,6 +36,9 @@ validation:
   unrecognized_links: warn
 strict: true
 
+exclude_docs: |
+  superpowers/
+
 plugins:
   - search
   - print-site
